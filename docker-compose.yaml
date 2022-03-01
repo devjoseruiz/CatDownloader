@@ -3,10 +3,8 @@ version: "3.9"
 services:
   redis:
     image: redis
-    restart: always
 
   app:
-    restart: always
     build:
       context: ./
     ports:
@@ -17,4 +15,18 @@ services:
         "./src/manage.py",
         "runserver",
         "0.0.0.0:3030"
+      ]
+
+  worker:
+    build:
+      context: ./
+    volumes:
+      - ./src/downloads:/app/src/downloads
+    command:
+      [
+        "celery",
+        "--workdir=./src",
+        "-A",
+        "catdownloader",
+        "worker"
       ]
